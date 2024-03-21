@@ -32,6 +32,7 @@ namespace ConsoleGame_ATB
     {
         void Action();
     }
+
     public class Title : ISceneState
     {
         public TitleState state;
@@ -49,7 +50,6 @@ namespace ConsoleGame_ATB
 
     public class Basic : ISceneState
     {
-
         public void Action()
         {
             //메인 씬 구현

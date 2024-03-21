@@ -33,7 +33,7 @@
     {
         private int objectID;     //고유 ID
         private EquipType _type;
-        private Stat ItemStat;
+        public Stat ItemStat { get; set; }
 
         public int ObjectID { get { return objectID; } set { objectID = ObjectID; } }
 

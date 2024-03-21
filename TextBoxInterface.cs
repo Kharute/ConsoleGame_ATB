@@ -9,13 +9,13 @@ namespace ConsoleGame_ATB
 {
     internal class TextBoxInterface
     {
-        public string[] boxStr = new string[7];
+        public string[] boxStr = new string[Define.SizeY_TextBox];
         //스트링 하나를 쪼개서 올린다. 스트링의 길이까지.
 
         public static string fillBlank(string str)
         {
             int sLength = str.Length;
-            for (int i = 0; i < 53 - sLength; i++)
+            for (int i = 0; i < 55 - sLength; i++)
             {
                 str += "  ";
             }
@@ -23,59 +23,75 @@ namespace ConsoleGame_ATB
         }
         public void init()
         {
-            boxStr = textBox.ToArray();
-        }
-
-        // 자... 이제 이거 엔터 누르면 바꿀 수 있어야 함.
-        List<string> textBox = new List<string>() {
-            "□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□",
-            "□                                                                                                                    □",
-            "□        "+fillBlank("")+"  □",
-            "□        "+fillBlank("")+"  □",
-            "□        "+fillBlank("")+"  □",
-            "□                                                                                                                    □",
-            "□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□"
-        };
-        
-        
-        public void PrintTextBox()
-        {
-            foreach(string s in boxStr) 
+            
+            for (int k = 0; k < Define.SizeY_TextBox; k++)
             {
-                for(int i = 0; i < s.Length; i++)
+                boxStr[k] = "";
+                for (int i = 0; i < Define.SizeX_Map + Define.SizeX_Menu; i++)
                 {
-                    Console.Write(s[i]);
+                    if(k == 0 || k == Define.SizeY_TextBox-1)
+                        boxStr[k] += "□";
+                    else
+                        boxStr[k] += "  ";
                 }
-                Console.WriteLine();
             }
         }
-        public void TextBoxChanged()
+
+        public void PrintTextBox(List<string> values, int cussor)
         {
-            string[] str = new string[2];
+            init();
+            //개수 보여주는 건 이따 작성
+            
+            int lengthCtl = values.Count;
+            if (lengthCtl > 4)
+                lengthCtl = 4;
+            // i부터 4개를 보여줘야하는데 커서가 일정 수 이상 넘어가면
+            // 커서는 알아서 고정할테니, value값이 움직여주면 됨.
 
-            for (int i = 0; i < str.Length; i++)
+            Cussor(values, cussor);
+
+            for (int i = 0; i < lengthCtl; i++)
             {
-                str[i] = "  ";
-                /*if (i == menu) { str[i] = "▷"; } else {}*/
-            }
-
-            boxStr[2] = $"□    {str[0]}" + fillBlank("구매한다") + "  ";
-            boxStr[3] = $"□    {str[1]}" + fillBlank("나간다") + "  ";
-        }
-
-        public void CurssorMove(int select)
-        {
-            string[] str = new string[2];
-
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (i == select)
+                if(cussor > 4)
                 {
-                    str[i] = "▷";
+                    boxStr[i + 1] += values[cussor + i];
                 }
                 else
                 {
-                    str[i] = "  ";
+                    boxStr[i + 1] += values[i];
+                }
+                
+            }
+            foreach (string s in boxStr) 
+            {
+                Console.WriteLine(s);
+            }
+        }
+        public void PrintBattleTextBox(bool turn, int dmg)
+        {
+            init();
+
+            if(turn == true)
+            {
+
+            }
+            boxStr[2] = "";
+
+        }
+        public void Cussor(List<string> strings, int cussor)
+        {
+            for (int i = 2; i < strings.Count+2; i++)
+            {
+                if(i < boxStr.Length)
+                {
+                    if (i == cussor + 2)
+                    {
+                        boxStr[i] = "    ▷";
+                    }
+                    else
+                    {
+                        boxStr[i] = "      ";
+                    }
                 }
             }
         }
