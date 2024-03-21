@@ -11,7 +11,6 @@ namespace ConsoleGame_ATB
     {
         protected Stat _mainStat;
         protected string _name;
-        protected int _level, _exp;
     }
 
     class Partner : Unit
@@ -23,15 +22,13 @@ namespace ConsoleGame_ATB
 
         protected Stat _mainStat;
         new private string _name;
-        new protected int _level, _exp;
-        public int curHP;
-
+        public int curHP { get; set; }
         public Stat MainStat { get { return _mainStat; } set { _mainStat = MainStat; } }
         public Stat EquipStat { get { return _equipStat; } set { _equipStat = EquipStat; } }
 
-        public int Exp { get { return _exp; } set { _exp = Exp; } }
+        public int Exp { get; set; }
         public string Name { get { return _name; } set { _name = Name; } }
-        public int Level { get { return _level; } set { _level = Level; } }
+        public int Level { get; set; }
 
         public void AddEXP(int _exp)
         {
@@ -53,8 +50,8 @@ namespace ConsoleGame_ATB
             ItemTable itemTable = new ItemTable();
 
             _name = name;
-            _level = 1;
-            _exp = 0;
+            Level = 1;
+            Exp = 0;
             _mainStat = new Stat(100, 10, 10, 10);
             _equipStat = new Stat(0, 0, 0, 0);
             curHP = _mainStat.MAX_HP;
@@ -91,6 +88,11 @@ namespace ConsoleGame_ATB
             Right = 3
         }
 
+        public void AddGold(int _gold)
+        {
+            gold += _gold;
+        }
+
         #endregion
 
         new public EquipItem[] _equipItem { get; set; } = new EquipItem[4]; //0 무기, 1 머리, 2 옷, 3 신발
@@ -99,16 +101,14 @@ namespace ConsoleGame_ATB
 
         new protected Stat _mainStat;
         new private string _name;
-        new protected int _level, _exp;
-        public int curHP;
 
         public Player(string name) : base(name)
         {
             Partner _p = new Partner(name);
 
             _name = name;
-            _level = _p.Level;
-            _exp = _p.Exp;
+            Level = _p.Level;
+            Exp = _p.Exp;
             _mainStat = _p.MainStat;
             _equipStat = _p.EquipStat;
             _equipItem = _p.EquipItem;
@@ -236,9 +236,11 @@ namespace ConsoleGame_ATB
         private List<Pos> _positions = new List<Pos>();
 
 
-        private int gold;
+        public int Gold { get; set; }
         public int HP { get; set; }
-        public int Gold { get { return gold; } set { gold = Gold; } }
+        public int Exp { get; set; }
+        public int Level { get; set; }
+
         public Stat MainStat { get { return _mainStat; } set { _mainStat = MainStat; } }
         public Enemy()
         {
@@ -246,11 +248,11 @@ namespace ConsoleGame_ATB
             _name = "고블린";
             _mainStat = new Stat(50, 5, 0, 0);
             HP = _mainStat.MAX_HP;
-            _level = 1;
-            _exp = 10;
+            Level = 1;
+            Exp = 10;
             Gold = 10 + random.Next() % 10;
-            PosX = (random.Next() % Define.SizeX_Map) +1;
-            PosY = (random.Next() % Define.SizeY_Map) +1;
+            PosX = (random.Next() % Define.SizeX_Map-2) +1;
+            PosY = (random.Next() % Define.SizeY_Map-2) +1;
 
             _positions.Add(new Pos(PosX, PosY));
         }

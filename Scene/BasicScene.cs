@@ -7,8 +7,6 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
 namespace ConsoleGame_ATB
 {
     internal class BasicScene
@@ -18,11 +16,9 @@ namespace ConsoleGame_ATB
         public Menu _menu;
         private Player _player;
         private NPC_Sell _NPCsell1, _NPCsell2;
-        private Enemy _enemy;
 
         private TextBoxInterface _textBox;
         private Partner[] _players = new Partner[4]; //플레이어 파티 정보
-        private const int WAIT_TICK = 1000 / 50;
 
         //캐릭터들의 포지션 value값
         List<List<Pos>> list_Position = new List<List<Pos>>();
@@ -42,7 +38,7 @@ namespace ConsoleGame_ATB
             {
                 BattleScene bScene = new BattleScene();
 
-                bScene.Update(_players, _player, _enemy);
+                bScene.Update(_players, _player);
                 bScene.BattleLoad();
             }
         }
@@ -66,7 +62,6 @@ namespace ConsoleGame_ATB
 
             _NPCsell1 = new NPC_Sell();
             _NPCsell2 = new NPC_Sell();
-            _enemy = new Enemy();
 
             _map.Init(_mapXSize, _mapYSize, _menuSize);
             _menu.Init(_menuSize, _mapYSize);
@@ -81,7 +76,6 @@ namespace ConsoleGame_ATB
             list_Position.Add(_player.Positions);   // listPositon[0] = _player.Positions
             list_Position.Add(_NPCsell1.Positions); // listPositon[1] = _NPCsell1.Positions
             list_Position.Add(_NPCsell2.Positions); // listPositon[2] = _NPCsell2.Positions
-            list_Position.Add(_enemy.Positions); // listPositon[2] = _NPCsell2.Positions
 
             _map.Update(list_Position);
             _menu.DicUpdate(_players, _player);
@@ -94,23 +88,7 @@ namespace ConsoleGame_ATB
 
             while (true)
             {
-                /*#region 
-                 * 실시간 파트 // 과감히 쳐낼 것.
-                 * 프레임 관리
-                int lastTick = System.Environment.TickCount;
-                int currentTick = System.Environment.TickCount;
-                int elapsedTick = currentTick - lastTick;
-
-                if (elapsedTick < WAIT_TICK)
-                    continue;
-
-                lastTick = currentTick;
-                #endregion
-                if (Console.KeyAvailable)
-                {
-                }
-                 */
-
+                _menu.stringAdd();
                 Console.SetCursorPosition(0, 0);
                 _map.Render(list_Position, _menu, _textBox);
 
@@ -171,10 +149,8 @@ namespace ConsoleGame_ATB
         }
         private bool MenuPressCheck(Menu _menu)
         {
-            
             ConsoleKeyInfo consoleKey = Console.ReadKey();
-                
-
+            
             switch (consoleKey.Key)
             {
                 // _menu.cursorLength[(int)_menu.MAIN_MENU]-1 이게 최대길이

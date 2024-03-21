@@ -67,16 +67,43 @@ namespace ConsoleGame_ATB
                 Console.WriteLine(s);
             }
         }
-        public void PrintBattleTextBox(bool turn, int dmg)
+        public void PrintBattleTextBox(int sanghwang, int value, int exp)
         {
-            init();
+            string s = "";
 
-            if(turn == true)
+            //데미지 계산 나1 상대2
+            // 전투승리3, 전투패배4
+            // 도망5 실패6
+            switch (sanghwang)
             {
-
+                case 1:
+                    s = $"     플레이어는 몬스터에게 {value} 의 데미지를 입혔다.";
+                    break;
+                case 2:
+                    s = $"     몬스터에게 플레이어는 {value} 의 데미지를 받았다.";
+                    break;
+                case 3:
+                    s = $"     전투에서 승리했다. {value}의 골드와 {exp}의 경험치를 얻었다.";
+                    break;
+                case 4:
+                    s = $"     전투에서 패배했다....";
+                    break;
+                case 5:
+                    s = $"     플레이어는 무사히 도망쳤다.";
+                    break;
+                case 6:
+                    s = $"     플레이어는 도망치는 것에 실패했다.";
+                    break;
             }
-            boxStr[2] = "";
+            boxStr[2] = s;
+            boxStr[3] = "";
+            boxStr[4] = "";
+            boxStr[5] = "";
 
+            foreach (string ss in boxStr)
+            {
+                Console.WriteLine(ss);
+            }
         }
         public void Cussor(List<string> strings, int cussor)
         {

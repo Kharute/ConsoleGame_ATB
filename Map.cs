@@ -45,8 +45,8 @@ namespace ConsoleGame_ATB
         }
         private bool PisicChk(int posX , int posY)
         {
-            bool posXcheck = posX <= 0 || posX >= SizeX;
-            bool posYcheck = posY <= 0 || posY >= SizeY;
+            bool posXcheck = posX <= 0 || posX >= SizeX-1;
+            bool posYcheck = posY <= 0 || posY >= SizeY-1;
 
             if (posXcheck || posYcheck)
                 return false;
@@ -88,7 +88,7 @@ namespace ConsoleGame_ATB
 
                     //2차 레이어
                     //해당위치가 같다면 렌더.
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < pPoint.Count; i++)
                     {
                         if (pPoint[i][0].Y == y && pPoint[i][0].X == x)
                         {

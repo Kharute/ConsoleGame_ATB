@@ -5,7 +5,7 @@
 
     class Item
     {
-        protected string itemID;       //아이템 ID
+        protected string itemID;       //아이템ID
         protected string _name;
         public string ItemID { get { return itemID; } set { itemID = ItemID; } }
         public string Name { get { return _name; } set { _name = Name; } }

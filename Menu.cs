@@ -73,7 +73,7 @@ namespace ConsoleGame_ATB
             {
                 {0 , "인벤토리"},
                 {1 , "골드 :" },
-                {2 , "아이템 :"}
+                {2 , "아이템"}
             };
             _lineDic_Save = new Dictionary<int, string>
             {
@@ -104,13 +104,15 @@ namespace ConsoleGame_ATB
     //
     internal class Menu
     {
-        public List<List<string>> strings = new List<List<string>>();
+        public List<List<string>> menuText = new List<List<string>>();
 
         Partner[] Partys { get; set; }
         Player Player { get; set; }
 
         public void stringAdd()
         {
+            menuText = new List<List<string>>();
+
             List<string> sBaseMenu =
             [
                 $"         메  뉴   ",
@@ -120,7 +122,7 @@ namespace ConsoleGame_ATB
                 $"   세이브 / 로드  ",
             ];
 
-            strings.Add(sBaseMenu);
+            menuText.Add(sBaseMenu);
 
             List<string> sPartMenu = [$"   동  료"];
 
@@ -129,7 +131,7 @@ namespace ConsoleGame_ATB
                 sPartMenu.Add($" - {Partys[i].Name}");
             }
 
-            strings.Add(sPartMenu);
+            menuText.Add(sPartMenu);
 
             List<string> sPInfoMenu = new List<string>();
             for (int i = 0; i < 4; i++) //그냥 길이만큼 곱해서 쓸 것 *8
@@ -143,7 +145,7 @@ namespace ConsoleGame_ATB
                 sPInfoMenu.Add($" - DEF : {Partys[i].MainStat.DEF}");
                 sPInfoMenu.Add($" - SPD : {Partys[i].MainStat.SPD}");
             }
-            strings.Add(sPInfoMenu);
+            menuText.Add(sPInfoMenu);
 
             List<string> sEquipMenu = new List<string>();
             
@@ -156,23 +158,23 @@ namespace ConsoleGame_ATB
                 sEquipMenu.Add($" 몸  : {Partys[i].EquipItem[2].Name}");
                 sEquipMenu.Add($"신발 : {Partys[i].EquipItem[3].Name}");
             }
-            strings.Add(sEquipMenu);
+            menuText.Add(sEquipMenu);
 
             List<string> sInvenMenu = new List<string>();
             sInvenMenu.Add($"골드 : {Player.gold}");
-            sInvenMenu.Add($"아이템 : {Player.gold}");
+            sInvenMenu.Add($"아이템 ");
             for (int i = 0; i < Player.Inventory.Count; i++)
             {
                 sInvenMenu.Add($"  - {Player.Inventory[i].Name}");
             }
-            strings.Add(sInvenMenu);
+            menuText.Add(sInvenMenu);
 
             List<string> sSaveMenu = new List<string>();
             sSaveMenu.Add($"       세이브 ");
             sSaveMenu.Add($"       저장한다 ");
             sSaveMenu.Add($"       로드한다 ");
             sSaveMenu.Add($"       종료한다 ");
-            strings.Add(sSaveMenu);
+            menuText.Add(sSaveMenu);
         }
 
         public int[] cursorLength = { 5, 5, 0, 5, 11, 4 };
@@ -248,8 +250,8 @@ namespace ConsoleGame_ATB
                             menuStr[i] += str[i-2];
                         }
                         
-                        if(i < strings[0].Count+2)
-                            menuStr[i] += strings[0][i-2];
+                        if(i < menuText[0].Count+2)
+                            menuStr[i] += menuText[0][i-2];
                         else
                             menuStr[i] = "";
                     }
@@ -263,8 +265,8 @@ namespace ConsoleGame_ATB
                             menuStr[i] += str[i - 2];
                         }
 
-                        if (i < strings[1].Count + 2)
-                            menuStr[i] += strings[1][i - 2];
+                        if (i < menuText[1].Count + 2)
+                            menuStr[i] += menuText[1][i - 2];
                         else
                             menuStr[i] = "";
                     }
@@ -279,8 +281,8 @@ namespace ConsoleGame_ATB
                             menuStr[i] += str[i - 2];
                         }
 
-                        if (i < (strings[2].Count)/4 + 2)
-                            menuStr[i] += strings[2][(cur -1)*8 + i - 2];
+                        if (i < (menuText[2].Count)/4 + 2)
+                            menuStr[i] += menuText[2][(cur -1)*8 + i - 2];
                         else
                             menuStr[i] = "";
                     }
@@ -295,8 +297,8 @@ namespace ConsoleGame_ATB
                             menuStr[i] += str[i - 2];
                         }
 
-                        if (i < strings[3].Count + 2)
-                            menuStr[i] += strings[3][i - 2];
+                        if (i < menuText[3].Count + 2)
+                            menuStr[i] += menuText[3][i - 2];
                         else
                             menuStr[i] = "";
                     }
@@ -310,8 +312,8 @@ namespace ConsoleGame_ATB
                             menuStr[i] += str[i - 2];
                         }
 
-                        if (i < strings[4].Count + 2)
-                            menuStr[i] += strings[4][i - 2];
+                        if (i < menuText[4].Count + 2)
+                            menuStr[i] += menuText[4][i - 2];
                         else
                             menuStr[i] = "";
 
@@ -326,8 +328,8 @@ namespace ConsoleGame_ATB
                             menuStr[i] += str[i - 2];
                         }
 
-                        if (i < strings[5].Count + 2)
-                            menuStr[i] += strings[5][i - 2];
+                        if (i < menuText[5].Count + 2)
+                            menuStr[i] += menuText[5][i - 2];
                         else
                             menuStr[i] = "";
                     }

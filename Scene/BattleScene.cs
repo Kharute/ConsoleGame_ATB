@@ -13,19 +13,19 @@ namespace ConsoleGame_ATB.Scene
     internal class BattleScene
     {
         public List<List<string>> battleText = new List<List<string>>();
+        List<string> images;
         Partner[] Partys { get; set; }
         Player Player { get; set; }
-        Enemy Enemy { get; set; }
+
+        Enemy Enemy = new Enemy();
 
         int curMenu = 0;
         int curCussor = 0;
         bool isEscBtn = false;
-        public void Update(Partner[] party, Player player, Enemy enemy)
+        public void Update(Partner[] party, Player player)
         {
             Player = player;
             Partys = party;
-            Enemy = enemy;
-
             stringAdd();
         }
 
@@ -40,35 +40,33 @@ namespace ConsoleGame_ATB.Scene
             TextBoxInterface _textBox = new TextBoxInterface();
             _textBox.init();
 
-            List<string> image = new List<string>();
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("               ＆                                □□□□        ");
-            image.Add("         ＆                                      □□□□        ");
-            image.Add("                                                 □□□□        ");
-            image.Add("                                                 □□□□        ");
-            image.Add("              ＆                                                 ");
-            image.Add("       ＆                                                        ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
-            image.Add("                                                                 ");
+            images = new List<string>();
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("               ＆                                □□□□        ");
+            images.Add("         ＆                                      □□□□        ");
+            images.Add("                                                 □□□□        ");
+            images.Add("                                                 □□□□        ");
+            images.Add("              ＆                                                 ");
+            images.Add("       ＆                                                        ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
+            images.Add("                                                                 ");
             
 
             while (!isEscBtn)
             {
-                Console.SetCursorPosition(0, 0);
+                Render(images, _textBox);
 
-                Render(image, _textBox);
-
-                PressCheck(_textBox);
-                Console.Clear();
+                _textBox.PrintTextBox(battleText[curMenu], curCussor);
+                PressCheck(_textBox);   
             }
             //죽었는지 물어보고 맞으면 사망처리
             if(Player.curHP < 0)
@@ -79,6 +77,9 @@ namespace ConsoleGame_ATB.Scene
 
         public void Render(List<string> image, TextBoxInterface _textBox)
         {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
+
             for (int y = 0; y < image.Count; y++)
             {
                 Console.WriteLine(image[y]);
@@ -86,8 +87,6 @@ namespace ConsoleGame_ATB.Scene
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine();
-
-            _textBox.PrintTextBox(battleText[curMenu], curCussor);
         }
 
         private int PressCheck(TextBoxInterface textBox)
@@ -133,7 +132,6 @@ namespace ConsoleGame_ATB.Scene
                         switch (curCussor)
                         {
                             case 0:
-                                // 공격
                                 Random rand = new Random();
 
                                 int playerDmg = Player.MainStat.ATK + Player.EquipItem[0].ItemStat.ATK + rand.Next() % 5;
@@ -141,32 +139,42 @@ namespace ConsoleGame_ATB.Scene
 
                                 Enemy.HP -= playerDmg;
                                 //textbox 이외에 출력박스 따로 만들어야할 듯.
-                                textBox.PrintTextBox(battleText[curMenu], curCussor);// 공격
-
+                                Render(images, textBox);
+                                textBox.PrintBattleTextBox(1, playerDmg, 0);// 공격
+                                Thread.Sleep(1500);
                                 // 사망체크
                                 if (Enemy.HP < 0)
                                 {
                                     isEscBtn = true;
+                                    int getGold = Enemy.Gold;
+                                    int getExp  = Enemy.Exp;
+                                    Player.AddGold(getGold);
+                                    Player.AddEXP(getExp);
                                     
-                                    Thread.Sleep(500);
-                                    textBox.PrintTextBox(battleText[curMenu], curCussor); //승리했다
-                                }
-                                else
-                                {
-                                    Player.curHP -= Enemy.MainStat.ATK - rand.Next() % 5 + 2;
-                                    textBox.PrintTextBox(battleText[curMenu], curCussor);   //받기
-                                    Thread.Sleep(500);
-                                    if (Player.curHP < 0)
-                                    {
-                                        isEscBtn = true;
-                                        textBox.PrintTextBox(battleText[curMenu], curCussor);
-                                        curMenu = 0;
-                                        curCussor = 0;
-                                        Thread.Sleep(500);
-                                        break;
-                                    }
+                                    Render(images, textBox);
+                                    textBox.PrintBattleTextBox(3, getGold, getExp);  //승리했다
+                                    Thread.Sleep(1000);
                                 }
                                 // 상대턴
+                                else
+                                {
+                                    Player.curHP -= enemyDmg;
+                                    Render(images, textBox);
+                                    textBox.PrintBattleTextBox(2, enemyDmg, 0);  //공격받았다.
+                                    Thread.Sleep(1000);
+                                    if (Player.curHP < 0)
+                                    {
+                                        //사망체크
+                                        isEscBtn = true;
+                                        Render(images, textBox);
+                                        textBox.PrintBattleTextBox(4, 0, 0); //사망했다.
+                                        curMenu = 0;
+                                        curCussor = 0;
+                                        Thread.Sleep(1000);
+                                    }
+                                }
+                                curMenu = 0;
+                                curCussor = 0;
                                 textBox.PrintTextBox(battleText[curMenu], curCussor);
                                 break;
                             case 1:
@@ -188,7 +196,6 @@ namespace ConsoleGame_ATB.Scene
                     break;
                 case ConsoleKey.Escape:
                     isEscBtn = true;
-                    //curMenu를 바꿀 것.
                     break;
             }
             // 엔터면 커서 위치 초기화
@@ -200,9 +207,9 @@ namespace ConsoleGame_ATB.Scene
             #region sBattleStart
             List<string> sBattleStart =
             [
-                $"   전투 시작 ",
-                $"   싸운다",
-                $"   도망친다.     "
+                $"      전투 시작 ",
+                $"        싸운다",
+                $"        도망친다."
             ];
 
             battleText.Add(sBattleStart);
@@ -210,9 +217,10 @@ namespace ConsoleGame_ATB.Scene
             #region sBattleMenu
             List<string> sBattleMenu = 
             [
-                $"   공격한다.",
-                $"   아이템을 사용한다.",
-                $"   이전 "
+                $"      전투 ",
+                $"        공격한다.",
+                $"        아이템을 사용한다.",
+                $"        이전 "
             ];
             battleText.Add(sBattleMenu);
             #endregion sBattleMenu
