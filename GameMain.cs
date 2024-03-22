@@ -14,7 +14,7 @@ namespace ConsoleGame_ATB
         public const int SizeX_Map = 45;
         public const int SizeY_Map = 35;
         public const int SizeX_Menu = 15;
-        public const int SizeY_TextBox = 7;
+        public const int SizeY_TextBox = 10;
     }
 
     internal class GameMain
@@ -24,8 +24,8 @@ namespace ConsoleGame_ATB
             GameManager gameManager = new GameManager();
             Console.CursorVisible = false;
 
-            Console.SetWindowSize(120, 44);
-            Console.SetBufferSize(120, 44);
+            Console.SetWindowSize(120, 52);
+            Console.SetBufferSize(120, 52);
             gameManager.StartGame();
         }
     }

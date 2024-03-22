@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace ConsoleGame_ATB
 {
-
     internal class Map
     {
         List<List<Pos>> mapPos = new List<List<Pos>>();
@@ -65,15 +64,18 @@ namespace ConsoleGame_ATB
 
 
         //NPC도 뭉탱이로 들고 와야 함.
-        public void Render(List<List<Pos>> pPoint, Menu menu, TextBoxInterface textBox)
+        public void Render(List<List<Pos>> pPoint, Menu menu, TextBox textBox)
         {
-            //현재 구문으로는 값이 늘어나버림
+            Console.Clear();
+            string[] sss = menu.PrintMenu();
+
             for (int y = 0; y < SizeY; y++)
             {
                 for (int x = 0; x < SizeX; x++)
                 {
+                    //더블버퍼..?
+                    //앞에 값이랑 비교해서 교체해서 사용하란 소린데...
                     char sPrint;
-                    
                     //1차 레이어
                     if (x == 0 || x == SizeX - 1 || y == 0 || y == SizeY - 1)
                     {
@@ -108,17 +110,15 @@ namespace ConsoleGame_ATB
                             }
                         }
                     }
-                    
                     Console.Write(sPrint);
                 }
                 // 메뉴 들어가야할 자리.
                 // 메뉴 구현
 
                 Console.ForegroundColor = ConsoleColor.Blue;
-                menu.PrintMenu(y);
-
-                Console.WriteLine();
+                Console.WriteLine(sss[y]);
             }
+
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine();
             

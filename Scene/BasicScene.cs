@@ -17,8 +17,10 @@ namespace ConsoleGame_ATB
         private Player _player;
         private NPC_Sell _NPCsell1, _NPCsell2;
 
-        private TextBoxInterface _textBox;
+        private TextBox _textBox;
         private Partner[] _players = new Partner[4]; //플레이어 파티 정보
+
+        
 
         //캐릭터들의 포지션 value값
         List<List<Pos>> list_Position = new List<List<Pos>>();
@@ -48,12 +50,16 @@ namespace ConsoleGame_ATB
             _map = new Map();
             _menu = new Menu();
             itemTable = new ItemTable();
-            _textBox = new TextBoxInterface();
+            _textBox = new TextBox();
 
             _player = new Player("용사 아리스");
+            _player.Inventory.Add(itemTable._equips["W_0001"]);
             _player.Inventory.Add(itemTable._potions["P_0001"]);
-            _player.Inventory.Add(itemTable._potions["P_0001"]);
-            _player.Inventory.Add(itemTable._potions["P_0001"]);
+            _player.Inventory.Add(itemTable._potions["P_0002"]);
+            _player.Inventory.Add(itemTable._potions["P_0003"]);
+            _player.Inventory.Add(itemTable._potions["P_0004"]);
+            _player.Inventory.Add(itemTable._potions["P_0005"]);
+            _player.Inventory.Add(itemTable._potions["P_0006"]);
 
             _players[0] = _player;
             _players[1] = new Partner("동료 A");
@@ -81,7 +87,6 @@ namespace ConsoleGame_ATB
             _menu.DicUpdate(_players, _player);
 
             _menu.ClearMenu();
-            _menu.CurssorMove(0, 1, false);
 
             //메뉴에 파티정보 업데이트
             bool basicChk = true;
@@ -96,13 +101,10 @@ namespace ConsoleGame_ATB
                     basicChk = MainPressCheck(_textBox);
                 else
                     basicChk = MenuPressCheck(_menu);
-                
-                Console.Clear();
             }
-            // 맵 렌더
         }
 
-        private bool MainPressCheck(TextBoxInterface textBox)
+        private bool MainPressCheck(TextBox textBox)
         {
             ConsoleKeyInfo consoleKey = Console.ReadKey();
 
@@ -113,29 +115,29 @@ namespace ConsoleGame_ATB
                     if (_map.RigidCheck(_player, Player.Move.Left))
                     {
                         _player.MovePlayer(Player.Move.Left);
+                        RandomIncount();
                     }
-                    RandomIncount();
                     break;
                 case ConsoleKey.RightArrow:
                     if (_map.RigidCheck(_player, Player.Move.Right))
                     {
                         _player.MovePlayer(Player.Move.Right);
+                        RandomIncount();
                     }
-                    RandomIncount();
                     break;
                 case ConsoleKey.UpArrow:
                     if (_map.RigidCheck(_player, Player.Move.Up))
                     {
                         _player.MovePlayer(Player.Move.Up);
-                    }
-                    RandomIncount();
+                        RandomIncount();
+                    }  
                     break;
                 case ConsoleKey.DownArrow:
                     if (_map.RigidCheck(_player, Player.Move.Down))
-                    {
+                    { 
                         _player.MovePlayer(Player.Move.Down);
+                        RandomIncount();
                     }
-                    RandomIncount();
                     break;
                 case ConsoleKey.Enter:
                     NPC_Check(list_Position);
@@ -147,86 +149,10 @@ namespace ConsoleGame_ATB
             
             return true;
         }
+
         private bool MenuPressCheck(Menu _menu)
         {
-            ConsoleKeyInfo consoleKey = Console.ReadKey();
-            
-            switch (consoleKey.Key)
-            {
-                // _menu.cursorLength[(int)_menu.MAIN_MENU]-1 이게 최대길이
-
-                // 메뉴 움직이기
-                case ConsoleKey.UpArrow:
-                    // 예외 처리
-                    if(_menu.curCussor == 1)
-                        _menu.CurssorMove(_menu.MAIN_MENU, _menu.cursorLength[(int)_menu.MAIN_MENU]-1,false);
-                    else
-                        _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor - 1, false);
-                    break;
-                case ConsoleKey.DownArrow:
-
-                    if (_menu.curCussor == _menu.cursorLength[(int)_menu.MAIN_MENU]-1)
-                        _menu.CurssorMove(_menu.MAIN_MENU, 1, false);
-                    else
-                        _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor + 1, false);
-                    break;
-                case ConsoleKey.Enter:
-                    _menu.ClearMenu();
-                        
-                    if (_menu.mainMenu == MainMenu.BaseMenu)
-                    {
-                        if(_menu.curCussor == 1 || _menu.curCussor == 2)
-                        // 커서 위치보고 Main 결정해줘야 함.
-                        {
-                            _menu.mainMenu = MainMenu.PartMenu;        //해당부분 접근자 수정 요함.
-                        }
-                        else if(_menu.curCussor == 3)
-                        {
-                            _menu.mainMenu = MainMenu.InvenMenu;
-                        }
-                        else
-                        {
-                            _menu.mainMenu = MainMenu.SaveMenu;
-                        }
-
-                        _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor, true);
-                    }
-                    else if (_menu.mainMenu == MainMenu.PartMenu)
-                    {
-                        _menu.mainMenu = MainMenu.PInfoMenu;
-                            
-                        if (_menu.curCussor == 1)
-                            _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor, true);
-                        else
-                            _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor, true);
-                    }
-                    // 해당 안에 시드로 들어간다.
-                    // 내정보, 동료정보 는 그냥 Esc만 먹히게
-                    break;
-                case ConsoleKey.Escape:
-
-                    if (_menu.MAIN_MENU != MainMenu.BaseMenu)
-                    {
-                        _menu.mainMenu = MainMenu.BaseMenu;
-                        _menu.CurssorMove(_menu.MAIN_MENU, 1, false);
-                        break;
-                    }
-                    else
-                    {
-                            
-                        return true;
-                    }
-                // 탈출할 게 남아있다면, break. 아니면 true
-                /*if()
-                {
-                    break;
-                }*/
-                case ConsoleKey.Tab:
-                    return true;
-                    
-            }
-            
-            return false;
+            return _menu.PressCheck(_menu);
         }
 
         private void NPC_Check(List<List<Pos>> pos)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Runtime;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleGame_ATB
 {
@@ -21,169 +22,25 @@ namespace ConsoleGame_ATB
     {
         BaseMenu, BuyMenu, SellMenu, Escape
     };
-/*
-    class Line_Dic
-    {
-        //차라리 처음부터 player 인수 받아서 처리할까?
-        //플레이어랑 동료 정보를 배열로 받아야겠는데?
-        //이러면 basic에 만들 때 부터, 해당 배열이 있어야 함.
-        public Dictionary<int, string> _lineDic_Base;
-        public Dictionary<int, string> _lineDic_Part;
-        public Dictionary<int, string> _lineDic_Pinfo;
-        public Dictionary<int, string> _lineDic_Equip;
-        public Dictionary<int, string> _lineDic_Inven;
-        public Dictionary<int, string> _lineDic_Save;
 
-        //메소드를 생성해서 string 을 반환
-        public Line_Dic()
-        {
-            _lineDic_Base = new Dictionary<int, string>
-            {
-                { 0 , "메  뉴" },
-                { 1 , "파티 상태창" },
-                { 2 , "파티 장비창" },
-                { 3 , "인벤토리" },
-                { 4 , "세이브 / 로드" },
-            };
-            _lineDic_Part = new Dictionary<int, string>
-            {
-                { 0 , "동  료" }
-            };
-            _lineDic_Pinfo = new Dictionary<int, string>
-            {
-                {0, "정  보" },
-                {1 , "이름 :" },
-                {2 , "레벨 :" },
-                {3 , "스탯" },
-                {4 , "  - HP" },
-                {5, "  - ATK" },
-                {6, "  - DEF" },
-                {7, "  - SPD" }
-            };
-            _lineDic_Equip = new Dictionary<int, string>
-            {
-                {0 , "장비창" },
-                {1 , "이름" },
-                {2 , "무기 :" },
-                {3 , "머리 :" },
-                {4 , "몸   :" },
-                {5 , "신발 :"}
-            };
-            _lineDic_Inven = new Dictionary<int, string>
-            {
-                {0 , "인벤토리"},
-                {1 , "골드 :" },
-                {2 , "아이템"}
-            };
-            _lineDic_Save = new Dictionary<int, string>
-            {
-                {0, "세이브" },
-                {1, "저장한다"},
-                {2, "로드한다"},
-                {3, "종료한다"},
-            };
-            // 동료로 지정한 캐릭의 정보가 나와야 됨.
-
-            //체크하면 벗는지 물어보고 벗는다. 인벤토리로 간다. EquipMenu
-
-            //플레이어만의 정보만 출력
-            //3번부턴 13번까지 player가 소지한 거 출력해줘야 됨.
-
-            //해당 캐릭터의 내용을 처리해서 보여준다.SaveMenu
-
-        }
-
-    }
-*/
-    
-    // BaseMenu = 서브 들어가기 전의 메뉴
-
-    // 재귀 함수 써서 안에 들어가도록
-    // esc 누르면 탈출 enter 누르면 진입
-
-    //
     internal class Menu
     {
         public List<List<string>> menuText = new List<List<string>>();
 
+        public string[] menuStr = new string[Define.SizeY_Map];
         Partner[] Partys { get; set; }
         Player Player { get; set; }
 
-        public void stringAdd()
-        {
-            menuText = new List<List<string>>();
+        int curMenu = 0;
+        int curCussor = 0;
 
-            List<string> sBaseMenu =
-            [
-                $"         메  뉴   ",
-                $"   파티 상태창   ",
-                $"   파티 장비창   ", 
-                $"   인벤토리     ",
-                $"   세이브 / 로드  ",
-            ];
-
-            menuText.Add(sBaseMenu);
-
-            List<string> sPartMenu = [$"   동  료"];
-
-            for (int i = 0; i < 4; i++)
-            {
-                sPartMenu.Add($" - {Partys[i].Name}");
-            }
-
-            menuText.Add(sPartMenu);
-
-            List<string> sPInfoMenu = new List<string>();
-            for (int i = 0; i < 4; i++) //그냥 길이만큼 곱해서 쓸 것 *8
-            {
-                sPInfoMenu.Add($"   정보");
-                sPInfoMenu.Add($"이름 : {Partys[i].Name}");
-                sPInfoMenu.Add($"레벨 : {Partys[i].Level} : Req({Partys[i].ReqExp[Partys[i].Level - 1] - Partys[i].Exp})");
-                sPInfoMenu.Add($"스탯");
-                sPInfoMenu.Add($" - H P : {Partys[i].curHP}/{Partys[i].MainStat.MAX_HP}");
-                sPInfoMenu.Add($" - ATK : {Partys[i].MainStat.ATK}");
-                sPInfoMenu.Add($" - DEF : {Partys[i].MainStat.DEF}");
-                sPInfoMenu.Add($" - SPD : {Partys[i].MainStat.SPD}");
-            }
-            menuText.Add(sPInfoMenu);
-
-            List<string> sEquipMenu = new List<string>();
-            
-            for (int i = 0; i < 4; i++) //*5
-            {
-                sEquipMenu.Add($"       장   비 ");
-                sEquipMenu.Add($"이름 : {Partys[i].Name}");
-                sEquipMenu.Add($"무기 : {Partys[i].EquipItem[0].Name}");
-                sEquipMenu.Add($"머리 : {Partys[i].EquipItem[1].Name}");
-                sEquipMenu.Add($" 몸  : {Partys[i].EquipItem[2].Name}");
-                sEquipMenu.Add($"신발 : {Partys[i].EquipItem[3].Name}");
-            }
-            menuText.Add(sEquipMenu);
-
-            List<string> sInvenMenu = new List<string>();
-            sInvenMenu.Add($"골드 : {Player.gold}");
-            sInvenMenu.Add($"아이템 ");
-            for (int i = 0; i < Player.Inventory.Count; i++)
-            {
-                sInvenMenu.Add($"  - {Player.Inventory[i].Name}");
-            }
-            menuText.Add(sInvenMenu);
-
-            List<string> sSaveMenu = new List<string>();
-            sSaveMenu.Add($"       세이브 ");
-            sSaveMenu.Add($"       저장한다 ");
-            sSaveMenu.Add($"       로드한다 ");
-            sSaveMenu.Add($"       종료한다 ");
-            menuText.Add(sSaveMenu);
-        }
+        
 
         public int[] cursorLength = { 5, 5, 0, 5, 11, 4 };
         private int xSize, ySize;
 
-        public string[] menuStr = new string[35];
         //메인메뉴 상태
         public MainMenu mainMenu;
-        public int curCussor = 1;
 
         public MainMenu MAIN_MENU { get { return mainMenu; } set { mainMenu = MAIN_MENU; } }
 
@@ -200,26 +57,27 @@ namespace ConsoleGame_ATB
         {
             xSize = mXSize; //x = 15;
             ySize = mYsize; //y = 35;
+            curMenu = 0;
+            curCussor = 0;
         }
 
         //커서가 이동할 때마다 커서 위치만 잡아주는 함수.
-        public void CurssorMove(MainMenu menu, int cur, bool enter)
+        public void Cussor(List<string> strings, int cussor)
         {
-            if(!enter)
-                curCussor = cur;
-            else
-                curCussor = 1;
-            int clength = (int)menu;// menu의 크기
-
-            string[] str = new string[cursorLength[clength]];
-            for (int i = 1; i < str.Length; i++)
+            for (int i = 2; i < strings.Count + 2; i++)
             {
-                if (i == curCussor)
-                    str[i] = "▷";
-                else
-                    str[i] = "  ";
+                if (i < menuStr.Length)
+                {
+                    if (i == cussor + 2)
+                    {
+                        menuStr[i] = "    ▷";
+                    }
+                    else
+                    {
+                        menuStr[i] = "      ";
+                    }
+                }
             }
-            PrintSelect(mainMenu, str, cur);
         }
         //enter를 눌렀을 때, 다음 메뉴에 있는 내용을 진행하는 함수.
 
@@ -241,7 +99,7 @@ namespace ConsoleGame_ATB
             //상황 보고 DIc에 add 시킬 것
             switch (menu)
             {
-                case MainMenu.BaseMenu:
+                /*case MainMenu.BaseMenu:
                     for (int i = 2; i < Define.SizeY_Map-1; i++)
                     {
                         menuStr[i] = "";
@@ -333,7 +191,7 @@ namespace ConsoleGame_ATB
                         else
                             menuStr[i] = "";
                     }
-                    break;
+                    break;*/
             }
             //0이면 가운데 정렬
             // 나머진 왼쪽 정렬
@@ -359,11 +217,153 @@ namespace ConsoleGame_ATB
         //y는 줄 단위로 반환 할 예정
 
         // 메뉴를 계속 프린트.
-        public void PrintMenu(int y)
+        public string[] PrintMenu()
         {
-            if (y < Define.SizeY_Map)
-                Console.Write(menuStr[y]);
+            ClearMenu();
+            //Cussor();
+
+            return menuStr.ToArray();
         }
         //메뉴를 눌렀을 경우에, 앞으로 해당 메뉴를 표시.
+
+        public bool PressCheck(Menu menu)
+        {
+            ConsoleKeyInfo consoleKey = Console.ReadKey();
+
+            switch (consoleKey.Key)
+            {
+                // _menu.cursorLength[(int)_menu.MAIN_MENU]-1 이게 최대길이
+                // 메뉴 움직이기
+                case ConsoleKey.UpArrow:
+                    if (menu.curCussor < 1)
+                        menu.curCussor = menuText[curMenu].Count - 2;
+                    else
+                        menu.curCussor--;
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (menu.curCussor >= menuText[curMenu].Count - 2)
+                        menu.curCussor = 0;
+                    else
+                        menu.curCussor++;
+
+                    break;
+                case ConsoleKey.Enter:
+                    ClearMenu();
+
+                    /*if (mainMenu == MainMenu.BaseMenu)
+                    {
+                        if (curCussor == 1 || curCussor == 2)
+                        // 커서 위치보고 Main 결정해줘야 함.
+                        {
+                            _menu.mainMenu = MainMenu.PartMenu;        //해당부분 접근자 수정 요함.
+                        }
+                        else if (_menu.curCussor == 3)
+                        {
+                            _menu.mainMenu = MainMenu.InvenMenu;
+                        }
+                        else
+                        {
+                            _menu.mainMenu = MainMenu.SaveMenu;
+                        }
+
+                        _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor, true);
+                    }
+                    else if (_menu.mainMenu == MainMenu.PartMenu)
+                    {
+                        _menu.mainMenu = MainMenu.PInfoMenu;
+
+                        if (_menu.curCussor == 1)
+                            _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor, true);
+                        else
+                            _menu.CurssorMove(_menu.MAIN_MENU, _menu.curCussor, true);
+                    }*/
+                    // 해당 안에 시드로 들어간다.
+                    // 내정보, 동료정보 는 그냥 Esc만 먹히게
+                    break;
+                case ConsoleKey.Escape:
+
+                    /*if (_menu.MAIN_MENU != MainMenu.BaseMenu)
+                    {
+                        _menu.mainMenu = MainMenu.BaseMenu;
+                        _menu.CurssorMove(_menu.MAIN_MENU, 1, false);
+                        break;
+                    }
+                    else*/
+                        return true;
+                case ConsoleKey.Tab:
+                    return true;
+
+            }
+
+            return false;
+        }
+
+        public void stringAdd()
+        {
+            menuText = new List<List<string>>();
+
+            List<string> sBaseMenu =
+            [
+                $"         메  뉴   ",
+                $"   파티 상태창   ",
+                $"   파티 장비창   ",
+                $"   인벤토리     ",
+                $"   세이브 / 로드  ",
+            ];
+
+            menuText.Add(sBaseMenu);
+
+            List<string> sPartMenu = [$"   동  료"];
+
+            for (int i = 0; i < 4; i++)
+            {
+                sPartMenu.Add($" - {Partys[i].Name}");
+            }
+
+            menuText.Add(sPartMenu);
+
+            List<string> sPInfoMenu = new List<string>();
+            for (int i = 0; i < 4; i++) //그냥 길이만큼 곱해서 쓸 것 *8
+            {
+                sPInfoMenu.Add($"   정보");
+                sPInfoMenu.Add($"이름 : {Partys[i].Name}");
+                sPInfoMenu.Add($"레벨 : {Partys[i].Level} : Req({Partys[i].ReqExp[Partys[i].Level - 1] - Partys[i].Exp})");
+                sPInfoMenu.Add($"스탯");
+                sPInfoMenu.Add($" - H P : {Partys[i].HP}/{Partys[i].MainStat.MAX_HP}");
+                sPInfoMenu.Add($" - ATK : {Partys[i].MainStat.ATK}");
+                sPInfoMenu.Add($" - DEF : {Partys[i].MainStat.DEF}");
+                sPInfoMenu.Add($" - SPD : {Partys[i].MainStat.SPD}");
+            }
+            menuText.Add(sPInfoMenu);
+
+            List<string> sEquipMenu = new List<string>();
+
+            for (int i = 0; i < 4; i++) //*5
+            {
+                sEquipMenu.Add($"       장   비 ");
+                sEquipMenu.Add($"이름 : {Partys[i].Name}");
+                sEquipMenu.Add($"무기 : {Partys[i].EquipItem[0].Name}");
+                sEquipMenu.Add($"머리 : {Partys[i].EquipItem[1].Name}");
+                sEquipMenu.Add($" 몸  : {Partys[i].EquipItem[2].Name}");
+                sEquipMenu.Add($"신발 : {Partys[i].EquipItem[3].Name}");
+            }
+            menuText.Add(sEquipMenu);
+
+            List<string> sInvenMenu = new List<string>();
+            sInvenMenu.Add($"골드 : {Player.gold}");
+            sInvenMenu.Add($"아이템 ");
+            for (int i = 0; i < Player.Inventory.Count; i++)
+            {
+                sInvenMenu.Add($"  - {Player.Inventory[i].Name}");
+            }
+            menuText.Add(sInvenMenu);
+
+            List<string> sSaveMenu = new List<string>();
+            sSaveMenu.Add($"       세이브 ");
+            sSaveMenu.Add($"       저장한다 ");
+            sSaveMenu.Add($"       로드한다 ");
+            sSaveMenu.Add($"       종료한다 ");
+            menuText.Add(sSaveMenu);
+        }
     }
 }
