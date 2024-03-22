@@ -64,12 +64,8 @@ namespace ConsoleGame_ATB.Scene
         public bool BattleLoad()
         {
             Console.Clear();
-            // 배틀 로드 파트
             
-
-            // 둘이 싸워서 이기면 탈출
             textBox.init();
-
             while (battleState != BattleState.Escape)
             {
                 Render(images, textBox);

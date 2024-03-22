@@ -107,7 +107,7 @@ namespace ConsoleGame_ATB.Scene
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine();
 
-            textBox.PrintTextBox(storeText[curMenu], curCussor); //값을 넣어서 해결 하자.
+            textBox.PrintTextBox(storeText[curMenu], curCussor);
         }
 
         public void StoreLoad()

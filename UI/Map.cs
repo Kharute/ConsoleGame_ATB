@@ -61,8 +61,6 @@ namespace ConsoleGame_ATB
             return true;
         }
 
-
-
         //NPC도 뭉탱이로 들고 와야 함.
         public void Render(List<List<Pos>> pPoint, Menu menu, TextBox textBox)
         {
@@ -87,7 +85,6 @@ namespace ConsoleGame_ATB
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         sPrint = map1[y][x];
                     }
-
                     //2차 레이어
                     //해당위치가 같다면 렌더.
                     for (int i = 0; i < pPoint.Count; i++)
@@ -114,7 +111,6 @@ namespace ConsoleGame_ATB
                 }
                 // 메뉴 들어가야할 자리.
                 // 메뉴 구현
-
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine(sss[y]);
             }

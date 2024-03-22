@@ -31,12 +31,10 @@ namespace ConsoleGame_ATB
         Partner[] Partys { get; set; }
         Player Player { get; set; }
 
-        int curMenu = 0;
-        int curCussor = 0;
-
+        public int curMenu = 0;
+        public int curCussor = 0;
+        int selectParty = 0;
         
-
-        public int[] cursorLength = { 5, 5, 0, 5, 11, 4 };
         private int xSize, ySize;
 
         //메인메뉴 상태
@@ -62,20 +60,17 @@ namespace ConsoleGame_ATB
         }
 
         //커서가 이동할 때마다 커서 위치만 잡아주는 함수.
-        public void Cussor(List<string> strings, int cussor)
+        public void Cussor(int count, int cussor)
         {
-            for (int i = 2; i < strings.Count + 2; i++)
+            for (int i = 0; i < menuText[curMenu].Count; i++)
             {
-                if (i < menuStr.Length)
+                if (i == cussor + 1)
                 {
-                    if (i == cussor + 2)
-                    {
-                        menuStr[i] = "    ▷";
-                    }
-                    else
-                    {
-                        menuStr[i] = "      ";
-                    }
+                    menuStr[i+1] = "    ▷";
+                }
+                else
+                {
+                    menuStr[i+1] = "      ";
                 }
             }
         }
@@ -92,120 +87,13 @@ namespace ConsoleGame_ATB
         // 메인일 땐 메뉴, 상점일 땐 상점, 상태창일 땐 상태창
 
 
-        private void PrintSelect(MainMenu menu, string[] str,int cur)
-        {
-            //리스트에 행 위치랑 단어 적어주고 나머지는 패딩만 해줌
-            //string으로 키 잡아주고, 적을 내용 string + 해당 열 int를 class 로 만들어 Dic에 넣는다?
-            //상황 보고 DIc에 add 시킬 것
-            switch (menu)
-            {
-                /*case MainMenu.BaseMenu:
-                    for (int i = 2; i < Define.SizeY_Map-1; i++)
-                    {
-                        menuStr[i] = "";
-                        if (i != 0 && i < str.Length+2)
-                        {
-                            menuStr[i] += str[i-2];
-                        }
-                        
-                        if(i < menuText[0].Count+2)
-                            menuStr[i] += menuText[0][i-2];
-                        else
-                            menuStr[i] = "";
-                    }
-                    break;
-                case MainMenu.PartMenu:
-                    for (int i = 2; i < Define.SizeY_Map - 1; i++)
-                    {
-                        menuStr[i] = "";
-                        if (i != 0 && i < str.Length + 2)
-                        {
-                            menuStr[i] += str[i - 2];
-                        }
-
-                        if (i < menuText[1].Count + 2)
-                            menuStr[i] += menuText[1][i - 2];
-                        else
-                            menuStr[i] = "";
-                    }
-
-                    break;
-                case MainMenu.PInfoMenu:
-                    for (int i = 2; i < Define.SizeY_Map - 1; i++)
-                    {
-                        menuStr[i] = "";
-                        if (i != 0 && i < str.Length + 2)
-                        {
-                            menuStr[i] += str[i - 2];
-                        }
-
-                        if (i < (menuText[2].Count)/4 + 2)
-                            menuStr[i] += menuText[2][(cur -1)*8 + i - 2];
-                        else
-                            menuStr[i] = "";
-                    }
-
-                    break;
-                case MainMenu.EquipMenu:
-                    for (int i = 2; i < Define.SizeY_Map - 1; i++)
-                    {
-                        menuStr[i] = "";
-                        if (i != 0 && i < str.Length + 2)
-                        {
-                            menuStr[i] += str[i - 2];
-                        }
-
-                        if (i < menuText[3].Count + 2)
-                            menuStr[i] += menuText[3][i - 2];
-                        else
-                            menuStr[i] = "";
-                    }
-                    break;
-                case MainMenu.InvenMenu:
-                    for (int i = 2; i < Define.SizeY_Map - 1; i++)
-                    {
-                        menuStr[i] = "";
-                        if (i != 0 && i < str.Length + 2)
-                        {
-                            menuStr[i] += str[i - 2];
-                        }
-
-                        if (i < menuText[4].Count + 2)
-                            menuStr[i] += menuText[4][i - 2];
-                        else
-                            menuStr[i] = "";
-
-                    }
-                    break;
-                case MainMenu.SaveMenu:
-                    for (int i = 2; i < Define.SizeY_Map - 1; i++)
-                    {
-                        menuStr[i] = "";
-                        if (i != 0 && i < str.Length + 2)
-                        {
-                            menuStr[i] += str[i - 2];
-                        }
-
-                        if (i < menuText[5].Count + 2)
-                            menuStr[i] += menuText[5][i - 2];
-                        else
-                            menuStr[i] = "";
-                    }
-                    break;*/
-            }
-            //0이면 가운데 정렬
-            // 나머진 왼쪽 정렬
-            //필요 없을 수 있음.*/
-        }
-
         public void ClearMenu()
         {
-            menuStr[0] = "■■■■■■■■■■■■■■■";
             for (int i = 0; i < menuStr.Length; i++)
             {
                 if (i != 0 && i != menuStr.Length - 1)
                 {
-                    menuStr[i] = "                             ";
+                    menuStr[i] = "";
                 }
                 else
                 {
@@ -220,7 +108,24 @@ namespace ConsoleGame_ATB
         public string[] PrintMenu()
         {
             ClearMenu();
-            //Cussor();
+            //menuStr
+            int lengthCtl = menuText[curMenu].Count;
+            if (lengthCtl > 10)
+                lengthCtl = 10;
+
+            Cussor(menuText.Count, curCussor);
+
+            for (int i = 0; i < lengthCtl; i++)
+            {
+                if (curCussor > 10)
+                {
+                    menuStr[i + 1] += menuText[curMenu][curCussor + i];
+                }
+                else
+                {
+                    menuStr[i + 1] += menuText[curMenu][i];
+                }
+            }
 
             return menuStr.ToArray();
         }
@@ -245,11 +150,72 @@ namespace ConsoleGame_ATB
                         menu.curCussor = 0;
                     else
                         menu.curCussor++;
-
                     break;
                 case ConsoleKey.Enter:
-                    ClearMenu();
-
+                    if (curMenu == 0)
+                    {
+                        switch (curCussor)
+                        {
+                            // 정보보기
+                            case 0:
+                                selectParty = curCussor;
+                                curMenu = 1;
+                                break;
+                            // 장비아이템 보기
+                            case 1:
+                                selectParty = curCussor;
+                                curMenu = 1;
+                                break;
+                            // 인벤토리 열기
+                            case 2:
+                                curMenu = 4;
+                                break;
+                            // 세이브
+                            case 3:
+                                curMenu = 5;
+                                break;
+                            // 뒤로가기
+                            case 4:
+                                return true;
+                        }
+                        curCussor = 0;
+                    }
+                    else if (curMenu == 1)
+                    {
+                        //selectParty를 보고 2/3으로 감. 0이면 2로 가고
+                        //해당 동료의 정보/ 장비창을 보고싶은 경우
+                        if(selectParty == 0)
+                            curMenu = 2;
+                        else
+                            curMenu = 3;
+                        curCussor = 0;
+                    }
+                    else if (curMenu == 2)
+                    {
+                        //해당 캐릭 정보 출력
+                        //리턴시킬 것
+                        curCussor = 0;
+                    }
+                    else if (curMenu == 3)
+                    {
+                        //해당 장비를 벗는 경우.
+                        //리턴시킬 것
+                        curMenu = 0;
+                        curCussor = 0;
+                    }
+                    else if (curMenu == 4)
+                    {
+                        //해당 장비를 입는 경우.
+                        //리턴시킬 것
+                        curMenu = 0;
+                        curCussor = 0;
+                    }
+                    else if (curMenu == 5)
+                    {
+                        //세이브하는 경우.
+                        curMenu = 0;
+                        curCussor = 0;
+                    }
                     /*if (mainMenu == MainMenu.BaseMenu)
                     {
                         if (curCussor == 1 || curCussor == 2)
@@ -281,15 +247,15 @@ namespace ConsoleGame_ATB
                     // 내정보, 동료정보 는 그냥 Esc만 먹히게
                     break;
                 case ConsoleKey.Escape:
-
-                    /*if (_menu.MAIN_MENU != MainMenu.BaseMenu)
+                    if(curMenu == 0)
+                        return true;
+                    else
                     {
-                        _menu.mainMenu = MainMenu.BaseMenu;
-                        _menu.CurssorMove(_menu.MAIN_MENU, 1, false);
+                        curMenu = 0;
+                        curCussor = 0;
                         break;
                     }
-                    else*/
-                        return true;
+
                 case ConsoleKey.Tab:
                     return true;
 
@@ -304,11 +270,12 @@ namespace ConsoleGame_ATB
 
             List<string> sBaseMenu =
             [
-                $"         메  뉴   ",
+                $"          메  뉴",
                 $"   파티 상태창   ",
                 $"   파티 장비창   ",
                 $"   인벤토리     ",
                 $"   세이브 / 로드  ",
+                $"   닫는다 "
             ];
 
             menuText.Add(sBaseMenu);
@@ -364,6 +331,7 @@ namespace ConsoleGame_ATB
             sSaveMenu.Add($"       로드한다 ");
             sSaveMenu.Add($"       종료한다 ");
             menuText.Add(sSaveMenu);
+
         }
     }
 }

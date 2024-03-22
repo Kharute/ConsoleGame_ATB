@@ -20,8 +20,6 @@ namespace ConsoleGame_ATB
         private TextBox _textBox;
         private Partner[] _players = new Partner[4]; //플레이어 파티 정보
 
-        
-
         //캐릭터들의 포지션 value값
         List<List<Pos>> list_Position = new List<List<Pos>>();
 
@@ -149,7 +147,6 @@ namespace ConsoleGame_ATB
             
             return true;
         }
-
         private bool MenuPressCheck(Menu _menu)
         {
             return _menu.PressCheck(_menu);
