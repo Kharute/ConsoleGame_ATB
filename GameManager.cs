@@ -8,21 +8,6 @@ using System.Xml.Linq;
 
 namespace ConsoleGame_ATB
 {
-    public class MyButton
-    {
-        // 1. event 선언
-        public event EventHandler Click;
-
-        public void MouseButtonDown()
-        {
-            if (this.Click != null)
-            {
-                // 5. 이벤트 발생
-                Click(this, EventArgs.Empty);
-            }
-        }
-    }
-
     // 여기서 씬 관리 할 것.
     enum GameScene
     {
@@ -32,6 +17,7 @@ namespace ConsoleGame_ATB
     {
         void Action();
     }
+
     public class Title : ISceneState
     {
         public TitleState state;
@@ -49,7 +35,6 @@ namespace ConsoleGame_ATB
 
     public class Basic : ISceneState
     {
-
         public void Action()
         {
             //메인 씬 구현

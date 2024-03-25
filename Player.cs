@@ -1,14 +1,88 @@
-﻿namespace ConsoleGame_ATB
+﻿using System.Reflection.Emit;
+using System.Xml.Linq;
+
+namespace ConsoleGame_ATB
 {
 
-    internal class Player
+    //class 유닛에 정보 좀 때려박고
+    // 나머지는 상속 받아서 해결한다.
+
+    abstract class Unit
+    {
+        public Stat _mainStat;
+        protected string _name;
+        public int HP { get; set; }
+    }
+
+    class Partner : Unit
+    {
+        public EquipItem[] EquipItem { get; set; } = new EquipItem[4]; //0 무기, 1 머리, 2 옷, 3 신발
+        protected Stat _equipStat;
+
+        public int[] ReqExp = { 50, 200, 500, 1000, 5000 };// 요구 경험치
+        new private string _name;
+        public Stat MainStat { get { return _mainStat; } set { _mainStat = MainStat; } }
+        public Stat EquipStat { get { return _equipStat; } set { _equipStat = EquipStat; } }
+
+        public int Exp { get; set; }
+        public string Name { get { return _name; } set { _name = Name; } }
+        public int Level { get; set; }
+
+        public int Attack(Enemy enemy)
+        {
+            Random rand = new Random();
+            int uDmg = _mainStat.ATK + EquipItem[0].ItemStat.ATK + rand.Next() % 5;
+
+            enemy.HP -= uDmg;
+            
+            return uDmg;
+        }
+        public virtual string[] GetReward(Enemy enemy)
+        {
+            string[] ret = new string[4]; //
+            Exp += enemy.Exp;
+            if (Exp > ReqExp[Level - 1]) { LevelUp(); }
+            return ret;
+        }
+
+        public void LevelUp()
+        {
+            Level++;
+            Random random = new Random();
+            MainStat.ATK += random.Next() % 2;
+            MainStat.DEF += random.Next() % 2;
+            MainStat.SPD += random.Next() % 2;
+            Exp -= ReqExp[Level - 1];
+        }
+
+        public Partner(string name)
+        {
+            ItemTable itemTable = new ItemTable();
+
+            _name = name;
+            Level = 1;
+            Exp = 0;
+            _mainStat = new Stat(100, 10, 10, 10);
+            _equipStat = new Stat(0, 0, 0, 0);
+            HP = _mainStat.MAX_HP;
+
+            EquipItem[0] = itemTable._equips["W_0001"];
+            EquipItem[1] = itemTable._equips["H_0001"];
+            EquipItem[2] = itemTable._equips["B_0001"];
+            EquipItem[3] = itemTable._equips["S_0001"];
+        }
+
+        //사망 체크 되면 TRUE 아님 FALSE 반환
+        
+    }
+
+    class Player : Partner
     {
         #region 이동 변수/ 메소드
-        private int _PosX, _PosY;
 
+        private int _PosX, _PosY;
         private int PosX { get; set; }
         private int PosY { get; set; }
-
         public List<Pos> Positions { get { return _positions; } }
         private List<Pos> _positions = new List<Pos>();
 
@@ -19,97 +93,102 @@
             Down = 2,
             Right = 3
         }
+        #endregion
 
-        public void Initialize(int posX, int posY)
+        public EquipItem[] _equipItem { get; set; } = new EquipItem[4]; //0 무기, 1 머리, 2 옷, 3 신발
+        public List<Item> Inventory { get; set; } = new List<Item>();
+        public int gold;
+
+        new protected Stat _mainStat;
+        new private string _name;
+        public override string[] GetReward(Enemy enemy)
         {
-            PosX = posX;
-            PosY = posY;
+            string[] ret = new string[4]; //
+            Exp += enemy.Exp;
+            if (Exp > ReqExp[Level - 1]) { LevelUp(); }
+            return ret;
+        }
+        public Player(string name) : base(name)
+        {
+            Partner _p = new Partner(name);
 
-            _positions.Add(new Pos(PosX, PosY));
+            _name = name;
+            Level = _p.Level;
+            Exp = _p.Exp;
+            _mainStat = _p.MainStat;
+            _equipStat = _p.EquipStat;
+            _equipItem = _p.EquipItem;
+            HP = _mainStat.MAX_HP;
+
+            Inventory = new List<Item>();
         }
 
         public void MovePlayer(Move move)
         {
-            /*_PosY = _positions[0].Y;
-            _PosX = _positions[0].X;*/
-
             switch (move)
             {
                 case Move.Left:
-                    _positions[0].X--;
+                    Positions[0].X--;
                     break;
                 case Move.Right:
-                    _positions[0].X++;
+                    Positions[0].X++;
                     break;
                 case Move.Up:
-                    _positions[0].Y--;
+                    Positions[0].Y--;
                     break;
                 case Move.Down:
-                    _positions[0].Y++;
+                    Positions[0].Y++;
                     break;
             }
         }
-        #endregion
-
-        int[] ReqExp = { 50, 200, 500, 1000, 5000 };// 요구 경험치
-
-        private string name;
-        private int level, exp;
-        private Stat mainStat;
-        private Stat equipStat;
-        public List<EquipItem> equipItem { get; set; } = new List<EquipItem>();
-
-        //플레이어만 줘야됨
-        public List<Item> inventory { get; set; } = new List<Item>();
-        int gold;
-
-        public Player()
+        public void itemAdd(string s1)
         {
-            name = "용사";
-            level = 1;
-            exp = 0;
-            mainStat = new Stat(100, 10, 10, 10);
-            equipStat = new Stat(0, 0, 0, 0);
-            inventory = new List<Item>();
-            equipItem = new List<EquipItem>();
-
+            //Inventory.Add(itemTable._equips["W_0001"]);
         }
-
-        public void AddEXP(int _exp)
+        public void AddGold(int _gold)
         {
-            exp += _exp;
-            if (exp > ReqExp[level - 1]) { LevelUp(); }
+            gold += _gold;
         }
+        public void Init(int posX, int posY)
+        {
+            PosX = posX;
+            PosY = posY;
 
-        public void UsePotion(Item item)
+            _positions.Add(new Pos(posX, posY));
+        }
+        public void UsePotion(Unit unit, Potion potion)
         {
             // 어떤 아이템인지 파라미터로 받고, 아이템의 제일 앞에 있는걸 쓴다.
-            bool isUsed = false;
-            string itemName = item.Name;
-            for (IEnumerator<Item> iter = inventory.GetEnumerator(); iter.MoveNext();)
+            if(potion.ItemID[0] != 'P')
             {
-                if (item == iter.Current)
+                return;
+            }
+            
+            switch (potion._pEffect)
+            {
+                case PotionEffect.Heal:
+                    unit.HP += potion.Value;
+                    break;
+                case PotionEffect.ATK_Up:
+                    unit._mainStat.ATK += potion.Value;
+                    break;
+                case PotionEffect.DEF_Up:
+                    unit._mainStat.DEF += potion.Value;
+                    break;
+                case PotionEffect.SPD_Up:
+                    unit._mainStat.SPD += potion.Value;
+                    break;
+            }
+
+            for (IEnumerator<Item> iter = Inventory.GetEnumerator(); iter.MoveNext();)
+            {
+                if (potion == iter.Current)
                 {
-                    inventory.Remove(iter.Current);
-                    isUsed = true;
+                    Inventory.Remove(iter.Current);
                     break;
                 }
             }
-            if (isUsed)
-            {
-                Console.WriteLine($"해당 아이템이 사용되었습니다. : {itemName}");
-            }
-            else
-            {
-                Console.WriteLine($"현재 해당 아이템이 없습니다.");
-            }
-        }
-
-        public void LevelUp()
-        {
-            level++;
-            exp -= ReqExp[level - 1];
-            Console.WriteLine("레벨업하였습니다.");
+            
         }
     }
 
@@ -156,27 +235,63 @@
             SellItem.Add(iTable._equips["S_0001"]);
 
             SellItem.Add(iTable._potions["P_0001"]);
-            SellItem.Add(iTable._potions["P_0001"]);
-            SellItem.Add(iTable._potions["P_0001"]);
             SellItem.Add(iTable._potions["P_0002"]);
+            SellItem.Add(iTable._potions["P_0003"]);
+            SellItem.Add(iTable._potions["P_0004"]);
         }
     }
-    class NPC_Quest
+    class Gate
     {
+        private int _PosX, _PosY;
+        private int PosX { get; set; }
+        private int PosY { get; set; }
+        public List<Pos> Positions { get { return _positions; } }
+        private List<Pos> _positions = new List<Pos>();
 
-    }
-    class NPC_Partner
-    {
-
-    }
-
-    class Monster
-    {
-        private Stat stat;
-
-        public Monster()
+        public Gate(int posX, int posY)
         {
-            
+            PosX = posX;
+            PosY = posY;
+
+            _positions.Add(new Pos(PosX, PosY));
+        }
+    }
+
+    class Enemy : Unit
+    {
+        private int PosX { get; set; }
+        private int PosY { get; set; }
+        public List<Pos> Positions { get { return _positions; } }
+        private List<Pos> _positions = new List<Pos>();
+
+        public int Gold { get; set; }
+        public int Exp { get; set; }
+        public int Level { get; set; }
+
+        public Stat MainStat { get { return _mainStat; } set { _mainStat = MainStat; } }
+
+        public Enemy()
+        {
+            Random random = new Random();   
+            _name = "고블린";
+            _mainStat = new Stat(100, 5, 0, 0);
+            HP = _mainStat.MAX_HP;
+            Level = 1;
+            Exp = 10;
+            Gold = 10 + random.Next() % 10;
+            PosX = (random.Next() % Define.SizeX_Map-2) +1;
+            PosY = (random.Next() % Define.SizeY_Map-2) +1;
+
+            _positions.Add(new Pos(PosX, PosY));
+        }
+
+        public bool Attack(Unit unit)
+        {
+            Random rand = new Random();
+            int eDmg = MainStat.ATK - rand.Next() % 5 + 2;
+            unit.HP -= eDmg;
+
+            return unit.HP < 0;
         }
     }
 
